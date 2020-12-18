@@ -30,20 +30,20 @@ public:
     explicit inline EventObserver(EventManager* peventManager, EventObservingPriority priority);
 
     template<class EventType>
-    void OnEvent(std::function<void(BaseEvent::Ptr)> slot);
+    void OnEvent(std::function<void(BaseEvent*)> slot);
 
     inline EventObservingPriority GetEventObservingPriority() const;
 
 private:
     template<class EventType>
-    void Observe(BaseEvent::Ptr pEvent);
+    void Observe(BaseEvent* pEvent);
     //todo: unregister event listening
 
 private:
     EventObservingPriority Priority;
     EventManager* pEventManager;
     ObserverID ID;
-    std::map<EventTypeId, std::function<void(BaseEvent::Ptr)>> Slots;
+    std::map<EventTypeId, std::function<void(BaseEvent*)>> Slots;
 };
 
 /////////
@@ -57,8 +57,8 @@ public:
     template<class EventType>
     void ConnectObserver(EventObserver* observer);
 
-    template<class EventType>
-    void SendEvent(BaseEvent::Ptr event);
+    template<class EventType, class ...Ts>
+    void SendEvent(Ts... args);
 
 private:
     //typedef std::priority_queue<EventObserver*, std::vector<EventObserver*>, EventPriorityComparator<EventObserver*>> ObserverQueue;
@@ -73,7 +73,7 @@ inline EventObserver::EventObserver(EventManager* peventManager, EventObservingP
 }
 
 template<class EventType>
-void EventObserver::OnEvent(std::function<void(BaseEvent::Ptr)> slot)
+void EventObserver::OnEvent(std::function<void(BaseEvent*)> slot)
 {
     const EventTypeId eventID = EventIdFromType::Get<EventType>();
     Slots[eventID] = slot;
@@ -86,7 +86,7 @@ EventObservingPriority EventObserver::GetEventObservingPriority() const
 }
 
 template<class EventType>
-void EventObserver::Observe(BaseEvent::Ptr pEvent)
+void EventObserver::Observe(BaseEvent* pEvent)
 {
     const EventTypeId eventID = EventIdFromType::Get<EventType>();
     assert((Slots.find(eventID) != Slots.end()) && "Observer connected to the event but doesn't have any slots to observe.");
@@ -118,14 +118,19 @@ void EventManager::ConnectObserver(EventObserver* observer)
     observer->ID = id;
 }
 
-template<class EventType>
-void EventManager::SendEvent(BaseEvent::Ptr event)
+template<class EventType, class ...Ts>
+void EventManager::SendEvent(Ts... args)
 {
     const EventTypeId eventID = EventIdFromType::Get<EventType>();
+
     if(RegisteredEvents.find(eventID) != RegisteredEvents.end())
     { 
+      EventType* e = new EventType(args...);
+
         const auto& observers = RegisteredEvents[eventID];
         for (auto& observer : observers)
-            observer->Observe<EventType>(event);
+            observer->Observe<EventType>(e);
+
+        delete e;
     }
 }

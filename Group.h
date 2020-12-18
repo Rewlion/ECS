@@ -21,10 +21,10 @@ public:
     inline const std::vector<ComponentID> GetRequirableComponentIDs() const;
 
 private:
-    void                                  OnEntityAdded(BaseEvent::Ptr event);
-    void                                  OnEntityReleased(BaseEvent::Ptr event);
-    void                                  OnComponentAdded(BaseEvent::Ptr event);
-    void                                  OnComponentRemoved(BaseEvent::Ptr event);
+    void                                  OnEntityAdded(BaseEvent* event);
+    void                                  OnEntityReleased(BaseEvent* event);
+    void                                  OnComponentAdded(BaseEvent* event);
+    void                                  OnComponentRemoved(BaseEvent* event);
 
     std::tuple<PositionInCache, bool>     FindPositionWithID(const EntityID id) const;
 

@@ -31,8 +31,7 @@ void Entity::RemoveComponent(const std::string& name)
 
     Components.erase(name);
 
-    BaseEvent::Ptr event {new ComponentRemovedEvent{ this, component->TypeId }};
-    pEventManager->SendEvent<ComponentRemovedEvent>(event);
+    pEventManager->SendEvent<ComponentRemovedEvent>(this, component->TypeId);
 }
 
 void Entity::RemoveComponents()

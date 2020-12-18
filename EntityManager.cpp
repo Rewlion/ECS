@@ -29,8 +29,7 @@ Entity* EntityManager::NewEntity()
         newEntity = Entities[id];
     }
 
-    BaseEvent::Ptr event { new EntityAddedEvent{ newEntity } };
-    pEventManager->SendEvent<EntityAddedEvent>(event);
+    pEventManager->SendEvent<EntityAddedEvent>(newEntity);
 
     return newEntity;
 }
@@ -40,6 +39,5 @@ void EntityManager::ReleaseEntity(Entity* entity)
     entity->Disable();
     ReusablePositionsInPool.push(entity->Id);
 
-    BaseEvent::Ptr event { new EntityReleasedEvent{ entity } };
-    pEventManager->SendEvent<EntityReleasedEvent>(event);
+    pEventManager->SendEvent<EntityReleasedEvent>(entity);
 }

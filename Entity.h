@@ -68,8 +68,7 @@ ComponentType* Entity::AddComponent(const std::string& name)
     assert(newComponent != nullptr);
     Components.emplace(name, newComponent);
 
-    BaseEvent::Ptr event {new ComponentAddedEvent{ this, newComponent->TypeId }};
-    pEventManager->SendEvent<ComponentAddedEvent>(event);
+    pEventManager->SendEvent<ComponentAddedEvent>(this, newComponent->TypeId);
 
     return newComponent;
 }

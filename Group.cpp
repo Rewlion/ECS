@@ -8,22 +8,22 @@ Group::Group(Context* context, const std::vector<ComponentID>& requirableCompone
     , RequirableComponentIDs(requirableComponentIDs)
     , Observer(CurrentContext->GetEventManager(), Priority_Critical)
 {
-    Observer.OnEvent<EntityAddedEvent>([this](BaseEvent::Ptr event)
+    Observer.OnEvent<EntityAddedEvent>([this](BaseEvent* event)
     {
         OnEntityAdded(event);
     });
 
-    Observer.OnEvent<EntityReleasedEvent>([this](BaseEvent::Ptr event)
+    Observer.OnEvent<EntityReleasedEvent>([this](BaseEvent* event)
     {
         OnEntityReleased(event);
     });
 
-    Observer.OnEvent<ComponentAddedEvent>([this](BaseEvent::Ptr event)
+    Observer.OnEvent<ComponentAddedEvent>([this](BaseEvent* event)
     {
         OnComponentAdded(event);
     });
 
-    Observer.OnEvent<ComponentRemovedEvent>([this](BaseEvent::Ptr event)
+    Observer.OnEvent<ComponentRemovedEvent>([this](BaseEvent* event)
     {
         OnComponentRemoved(event);
     });
@@ -36,9 +36,9 @@ Group::Group(Context* context, const std::vector<ComponentID>& requirableCompone
     }
 }
 
-void Group::OnEntityAdded(BaseEvent::Ptr event)
+void Group::OnEntityAdded(BaseEvent* event)
 {
-    EntityAddedEvent::Ptr castedEvent = std::dynamic_pointer_cast<EntityAddedEvent>(event);
+    EntityAddedEvent* castedEvent = reinterpret_cast<EntityAddedEvent*>(event);
     assert(castedEvent != nullptr);
     Entity* addedEntity = castedEvent->AddedEntity;
 
@@ -59,9 +59,9 @@ void Group::OnEntityAdded(BaseEvent::Ptr event)
     }
 }
 
-void Group::OnEntityReleased(BaseEvent::Ptr event)
+void Group::OnEntityReleased(BaseEvent* event)
 {
-    EntityReleasedEvent::Ptr castedEvent = std::dynamic_pointer_cast<EntityReleasedEvent>(event);
+    EntityReleasedEvent* castedEvent = reinterpret_cast<EntityReleasedEvent*>(event);
     assert(castedEvent != nullptr);
     const Entity* removedEntity = castedEvent->RemovedEntity;
 
@@ -78,9 +78,9 @@ void Group::OnEntityReleased(BaseEvent::Ptr event)
     
 }
 
-void Group::OnComponentAdded(BaseEvent::Ptr event)
+void Group::OnComponentAdded(BaseEvent* event)
 {
-    ComponentAddedEvent::Ptr castedEvent = std::dynamic_pointer_cast<ComponentAddedEvent>(event);
+    ComponentAddedEvent* castedEvent = reinterpret_cast<ComponentAddedEvent*>(event);
     Entity* owner = castedEvent->Owner; // ownerid -> owner(entity)
 
     auto[positionInCache, isFound] = FindPositionWithID(owner->GetId());
@@ -105,9 +105,9 @@ void Group::OnComponentAdded(BaseEvent::Ptr event)
     }
 }
 
-void Group::OnComponentRemoved(BaseEvent::Ptr event)
+void Group::OnComponentRemoved(BaseEvent* event)
 {
-    ComponentRemovedEvent::Ptr castedEvent = std::dynamic_pointer_cast<ComponentRemovedEvent>(event);
+    ComponentRemovedEvent* castedEvent = reinterpret_cast<ComponentRemovedEvent*>(event);
     Entity* owner = castedEvent->Owner;
 
     auto[positionInCache, isFound] = FindPositionWithID(owner->GetId());
