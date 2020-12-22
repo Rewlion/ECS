@@ -3,6 +3,7 @@
 
 Context::Context()
     : EntManager(&CompManager, &EvntManager)
+    , UserData(nullptr)
 {
     RegisterDefaultECSEvents();
 }

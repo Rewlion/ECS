@@ -27,6 +27,9 @@ public:
     inline EventManager* GetEventManager();
     inline EntityManager* GetEntityManager();
 
+    inline void SetUserData(void* data);
+    inline void* GetUserData();
+
     inline bool CheckIfShouldStopSimulation() const;
 
 private:
@@ -40,6 +43,7 @@ private:
     std::vector<LogicSystem*>          LogicSystems;
     std::vector<CleanupSystem*>        CleanupSystems;
     std::vector<Group*>                Groups;
+    void*                              UserData;
 
     bool ShouldStopSimulation;
 };
@@ -86,6 +90,16 @@ EventManager* Context::GetEventManager()
 EntityManager* Context::GetEntityManager()
 {
     return &EntManager;
+}
+
+void Context::SetUserData(void* data)
+{
+  UserData = data;
+}
+
+void* Context::GetUserData()
+{
+  return UserData;
 }
 
 bool Context::CheckIfShouldStopSimulation() const
