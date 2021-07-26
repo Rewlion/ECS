@@ -65,6 +65,7 @@ ComponentType* Entity::AddComponent(const std::string& name)
     assert(IsComponentWithNameAlreadyRegisterred == false);
 
     ComponentType* newComponent = pComponentManager->NewComponent<ComponentType>();
+    newComponent->Name = name;
     assert(newComponent != nullptr);
     Components.emplace(name, newComponent);
 
